@@ -5,12 +5,28 @@ const Schema = mongoose.Schema;
 const SALT_ROUNDS = 11;
 
 const UserSchema = Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String, 
+    required: true
+  }
   // create your user schema here.
   // username: required, unique and lowercase
   // password: required
 });
 
 UserSchema.pre('save', function(next) {
+  bcrypt.hash(this.password, 15, (err, hash) => {
+    if(err) {
+      return next(err);
+    } else {
+      this.password = hash;
+      return next()
+    }
+  })
   // https://github.com/kelektiv/node.bcrypt.js#usage
   // Fill this middleware in with the Proper password encrypting, bcrypt.hash()
   // if there is an error here you'll need to handle it by calling next(err);
